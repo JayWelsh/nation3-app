@@ -7,6 +7,7 @@ import {
   useContract,
   useContractRead as _useContractRead,
   useSigner,
+  chain,
 } from 'wagmi'
 import { useErrorContext } from '../components/ErrorProvider'
 import { useHandleError } from './use-handle-error'
@@ -15,13 +16,11 @@ export function useAccount(params) {
   return useHandleError(_useAccount(params))
 }
 
-export function useNetwork(disconnect) {
+export function useNetwork() {
   const currentNetwork = _useNetwork();
-  if(!currentNetwork.error && currentNetwork.data?.chain && process?.env?.NEXT_PUBLIC_CHAIN?.toLowerCase() !== currentNetwork.data.chain.name?.toLowerCase()) {
-    currentNetwork.error = `Unsupported Network (${currentNetwork.data.chain.name})`
-    if(disconnect) {
-      disconnect();
-    }
+  const requiredChainId = chain[process?.env?.NEXT_PUBLIC_CHAIN?.toLowerCase()]?.id;
+  if(!currentNetwork.error && currentNetwork.activeChain?.id && currentNetwork.activeChain?.id !== requiredChainId) {
+    currentNetwork.error = `Unsupported Network (${currentNetwork.activeChain?.name})`
   }
   return currentNetwork;
 }

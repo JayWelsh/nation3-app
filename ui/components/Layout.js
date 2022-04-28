@@ -76,7 +76,7 @@ export default function Layout({ children }) {
   const { connectors, connectAsync, error: connectError } = useConnect()
   const { data: ensName } = useEnsName()
   const { disconnect } = useDisconnect() 
-  const { data: network, error: networkError } = useNetwork()
+  const { activeChain, error: networkError } = useNetwork()
   const [nav, setNav] = useState(navigation)
   const errorContext = useErrorContext()
   const [account, setAccount] = useState('')
@@ -220,7 +220,7 @@ export default function Layout({ children }) {
           {account ? (
             <>
               <h3 className="text-lg font-bold px-4">Account</h3>
-              <p className="p-4">Connected to {network.chain.name} via {account.connector?.name}</p>
+              <p className="p-4">Connected to {activeChain?.name} via {account.connector?.name}</p>
               {networkError ? 
                 <div className="alert alert-error mb-4">
                   <div>
