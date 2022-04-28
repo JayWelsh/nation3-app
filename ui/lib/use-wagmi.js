@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import {
-  useConnect as _useConnect,
+  // useConnect as _useConnect,
   useAccount as _useAccount,
   useBalance as _useBalance,
   useContract,
@@ -9,10 +9,6 @@ import {
 } from 'wagmi'
 import { useErrorContext } from '../components/ErrorProvider'
 import { useHandleError } from './use-handle-error'
-
-export function useConnect() {
-  return useHandleError(_useConnect())
-}
 
 export function useAccount(params) {
   return useHandleError(_useAccount(params))
@@ -38,8 +34,7 @@ function _useContractWrite(config, method, argsAndOverrides) {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  const [{ data: signerData, error: signerError, loading: signerLoading }] =
-    useSigner()
+  const { data: signerData, error: signerError } = useSigner()
   const contract = useContract({
     ...config,
     signerOrProvider: signerData,
