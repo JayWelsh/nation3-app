@@ -3,26 +3,29 @@ import { useState, useEffect } from 'react'
 import { nationDropAmount, nationToken } from '../lib/config'
 import { useClaimsFile, useIsClaimed, useClaimDrop } from '../lib/merkle-drop'
 import { useHandleError } from '../lib/use-handle-error'
-import { useAccount } from '../lib/use-wagmi'
+import { useAccount, useNetwork } from '../lib/use-wagmi'
 import ActionButton from '../components/ActionButton'
 import Confetti from '../components/Confetti'
 import Head from '../components/Head'
 import MainCard from '../components/MainCard'
 
 export default function Claim() {
-  const [{ data: account }] = useAccount()
+  const { data: account } = useAccount()
+  const { error: networkError } = useNetwork()
   const [canClaim, setCanClaim] = useState(false)
   const [proofIndex, setProofIndex] = useState()
   const [justClaimed, setJustClaimed] = useState(false)
 
-  const [{ data: claimsFile }] = useHandleError(useClaimsFile())
-  const [{ data: isClaimed }] = useIsClaimed(proofIndex)
+  const { data: claimsFile } = useHandleError(useClaimsFile())
+  const { data: isClaimed } = useIsClaimed(proofIndex)
 
   useEffect(() => {
     if (claimsFile && account) {
-      if (claimsFile.claims[account.address]) {
+      if (claimsFile.claims[account.address] && !networkError) {
         setProofIndex(claimsFile.claims[account.address].index)
         setCanClaim(!isClaimed)
+      } else if (networkError) {
+        setCanClaim(false)
       }
     }
   }, [account, claimsFile, isClaimed])

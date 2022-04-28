@@ -14,6 +14,7 @@ let config = {
   nationDropContract:
     process.env.NEXT_PUBLIC_NATION_DISTRIBUTOR_CONTRACT_ADDRESS,
   nationDropAmount: process.env.NEXT_PUBLIC_NATION_DISTRIBUTOR_DROP_AMOUNT,
+  publicChain: process.env.NEXT_PUBLIC_CHAIN,
 }
 
 if (process.env.NEXT_PUBLIC_CHAIN !== 'mainnet') {

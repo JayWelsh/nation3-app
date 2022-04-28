@@ -3,6 +3,7 @@ import {
   useConnect as _useConnect,
   useAccount as _useAccount,
   useBalance as _useBalance,
+  useNetwork as _useNetwork,
   useContract,
   useContractRead as _useContractRead,
   useSigner,
@@ -16,6 +17,17 @@ export function useConnect() {
 
 export function useAccount(params) {
   return useHandleError(_useAccount(params))
+}
+
+export function useNetwork(disconnect) {
+  const currentNetwork = _useNetwork();
+  if(!currentNetwork.error && currentNetwork.data?.chain && process?.env?.NEXT_PUBLIC_CHAIN?.toLowerCase() !== currentNetwork.data.chain.name?.toLowerCase()) {
+    currentNetwork.error = `Unsupported Network (${currentNetwork.data.chain.name})`
+    if(disconnect) {
+      disconnect();
+    }
+  }
+  return currentNetwork;
 }
 
 export function useBalance(params) {
@@ -38,7 +50,7 @@ function _useContractWrite(config, method, argsAndOverrides) {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  const [{ data: signerData, error: signerError, loading: signerLoading }] =
+  const { data: signerData, error: signerError, loading: signerLoading } =
     useSigner()
   const contract = useContract({
     ...config,

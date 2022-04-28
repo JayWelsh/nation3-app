@@ -24,7 +24,7 @@ import { useConnect } from 'wagmi'
 import { nationToken } from '../lib/config'
 import { connectorIcons } from '../lib/connectors'
 import { useHandleError } from '../lib/use-handle-error'
-import { useAccount } from '../lib/use-wagmi'
+import { useAccount, useNetwork } from '../lib/use-wagmi'
 import Logo from '../public/logo.svg'
 import ErrorCard from './ErrorCard'
 import { useErrorContext } from './ErrorProvider'
@@ -80,6 +80,7 @@ export default function Layout({ children }) {
       fetchEns: true,
     })
   )
+  const { data: network, error: networkError } = useNetwork()
 
   const [nav, setNav] = useState(navigation)
 
@@ -170,6 +171,14 @@ export default function Layout({ children }) {
               <ul className="menu p-4 text-base-400">
                 {account ? (
                   <li>
+                    {networkError ? 
+                      <div className="alert alert-error mb-4">
+                        <div>
+                          <XCircleIcon className="h-5 w-5" />
+                          <span>{'Unsupported Network'}</span>
+                        </div>
+                      </div>
+                    : ''}
                     <label htmlFor="web3-modal">
                       <div className="mask mask-circle cursor-pointer">
                         <Blockies seed={account?.address} size={12} />
@@ -211,7 +220,15 @@ export default function Layout({ children }) {
           {account ? (
             <>
               <h3 className="text-lg font-bold px-4">Account</h3>
-              <p className="p-4">Connected to {account.connector.name}</p>
+              <p className="p-4">Connected to {network.chain.name} via {account.connector.name}</p>
+              {networkError ? 
+                <div className="alert alert-error mb-4">
+                  <div>
+                    <XCircleIcon className="h-5 w-5" />
+                    <span>{networkError || 'Unsupported Network'}</span>
+                  </div>
+                </div>
+              : ''}
               <ul className="menu bg-base-100 p-2 -m-2 rounded-box">
                 <li key="address">
                   <a
